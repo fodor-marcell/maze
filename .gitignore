@@ -1,0 +1,27 @@
+# Binaries and build outputs
+*.exe
+*.out
+*.o
+*.obj
+*.a
+*.lib
+*.dll
+*.so
+*.dylib
+maze
+maze.exe
+
+# Debug and temporary files
+*.pdb
+*.ilk
+*.log
+*.tmp
+
+# IDE/editor settings
+.vscode/
+.idea/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+Desktop.ini
