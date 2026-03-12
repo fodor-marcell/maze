@@ -6,8 +6,11 @@
 *.a
 *.lib
 *.dll
+!freeglut.dll
 *.so
 *.dylib
+!third_party/
+!third_party/**
 maze
 maze.exe
 
@@ -18,7 +21,8 @@ maze.exe
 *.tmp
 
 # IDE/editor settings
-.vscode/
+.vscode/*
+!.vscode/tasks.json
 .idea/
 
 # OS metadata
