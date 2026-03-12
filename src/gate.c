@@ -257,7 +257,26 @@ static ObjMesh loadObjMesh(const char *path)
     float *outV, *outUV, *outN;
     int vi, vti, vni, outi, maxOutVerts;
 
-    f = fopen(path, "r");
+    {
+        static const char *prefixes[] = {"", "../", "../../", "../../../"};
+        char candidate[768];
+        int i;
+
+        f = NULL;
+        for (i = 0; i < (int)(sizeof(prefixes) / sizeof(prefixes[0])); i++)
+        {
+            snprintf(candidate, sizeof(candidate), "%s%s", prefixes[i], path);
+            f = fopen(candidate, "r");
+            if (f)
+            {
+                if (i != 0)
+                {
+                    fprintf(stderr, "Info: gate mesh loaded via fallback path: %s\n", candidate);
+                }
+                break;
+            }
+        }
+    }
     if (!f)
     {
         fprintf(stderr, "loadObjMesh: cannot open %s\n", path);
@@ -464,15 +483,27 @@ void drawStarterGate(void)
     glRotatef(-starterGate.currentAngleDeg, 0.0f, 1.0f, 0.0f);
     glTranslatef(-objXMin, -objYMin, -zCenter);
 
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, gateTexture);
-    setWorldShaderUseTexture(1);
-    glColor3f(1.0f, 1.0f, 1.0f);
+    if (gateTexture != 0)
+    {
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, gateTexture);
+        setWorldShaderUseTexture(1);
+        glColor3f(1.0f, 1.0f, 1.0f);
+    }
+    else
+    {
+        glDisable(GL_TEXTURE_2D);
+        setWorldShaderUseTexture(0);
+        glColor3f(0.70f, 0.70f, 0.74f);
+    }
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, matWhite);
 
     drawObjMesh(&gateMesh);
 
-    glDisable(GL_TEXTURE_2D);
+    if (gateTexture != 0)
+    {
+        glDisable(GL_TEXTURE_2D);
+    }
     setWorldShaderUseTexture(0);
     glPopMatrix();
 }

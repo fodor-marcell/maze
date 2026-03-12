@@ -34,7 +34,7 @@ GLuint gateTexture = 0;
 const char* WALL_TEXTURE_PATH = "assets/textures/wall.png";
 const char* FLOOR_TEXTURE_PATH = "assets/textures/floor.jpg";
 const char* SKY_TEXTURE_PATH = "assets/textures/sky.jpg";
-const char* GATE_TEXTURE_PATH = "assets/textures/large_iron_gate_4k.blend/textures/large_iron_gate_diff_4k.jpg";
+const char* GATE_TEXTURE_PATH = "assets/textures/wall.png";
 const char* GATE_OBJ_PATH     = "assets/textures/gate.obj";
 
 int endTileX = 14;
@@ -445,6 +445,23 @@ void init(void)
     gateTexture = loadTexture(GATE_TEXTURE_PATH, 0);
     loadGateMesh(GATE_OBJ_PATH);
     loadSkyTexture(SKY_TEXTURE_PATH);
+
+    if (wallTexture == 0)
+    {
+        fprintf(stderr, "Warning: failed to load wall texture: %s\n", WALL_TEXTURE_PATH);
+    }
+    if (floorTexture == 0)
+    {
+        fprintf(stderr, "Warning: failed to load floor texture: %s\n", FLOOR_TEXTURE_PATH);
+    }
+    if (skyTexture == 0)
+    {
+        fprintf(stderr, "Warning: failed to load sky texture: %s\n", SKY_TEXTURE_PATH);
+    }
+    if (gateTexture == 0)
+    {
+        fprintf(stderr, "Warning: failed to load gate texture: %s\n", GATE_TEXTURE_PATH);
+    }
 }
 
 int main(int argc, char** argv)

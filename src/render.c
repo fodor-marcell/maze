@@ -8,9 +8,37 @@
 #include "gate.h"
 #include "glshader.h"
 
+static GLuint loadTextureWithFallback(const char *path, int flags)
+{
+    static const char *prefixes[] = {"", "../", "../../", "../../../"};
+    char candidate[768];
+    int i;
+
+    for (i = 0; i < (int)(sizeof(prefixes) / sizeof(prefixes[0])); i++)
+    {
+        GLuint textureId;
+
+        candidate[0] = '\0';
+        snprintf(candidate, sizeof(candidate), "%s%s", prefixes[i], path);
+        textureId = SOIL_load_OGL_texture(candidate, SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, flags);
+        if (textureId != 0)
+        {
+            if (i != 0)
+            {
+                fprintf(stderr, "Info: texture loaded via fallback path: %s\n", candidate);
+            }
+            return textureId;
+        }
+    }
+
+    fprintf(stderr, "Error: failed to load texture '%s' (SOIL: %s)\n", path, SOIL_last_result());
+
+    return 0;
+}
+
 static GLuint loadSkyboxFaceTexture(const char *path)
 {
-    GLuint textureId = SOIL_load_OGL_texture(path, SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, 0);
+    GLuint textureId = loadTextureWithFallback(path, 0);
 
     if (textureId == 0)
     {
@@ -28,12 +56,7 @@ static GLuint loadSkyboxFaceTexture(const char *path)
 
 GLuint loadTexture(const char *path, int repeatTexture)
 {
-    GLuint textureId = SOIL_load_OGL_texture(
-        path,
-        SOIL_LOAD_AUTO,
-        SOIL_CREATE_NEW_ID,
-        SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y
-    );
+    GLuint textureId = loadTextureWithFallback(path, SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y);
 
     if (textureId == 0)
     {
@@ -230,7 +253,7 @@ void drawFloorAndCeiling(void)
     int sx;
     int sy;
     const int floorSubdiv = 12;
-    const float invFloorSubdiv = 1.0f / 4.0f;
+    const float invFloorSubdiv = 1.0f / (float)floorSubdiv;
     GLfloat floorDiffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
 
     glMaterialfv(GL_FRONT, GL_DIFFUSE, floorDiffuse);
@@ -386,10 +409,19 @@ void drawWall(float x, float y)
 
     glMaterialfv(GL_FRONT, GL_DIFFUSE, matDiffuse);
 
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, wallTexture);
-    setWorldShaderUseTexture(1);
-    glColor3f(1.0f, 1.0f, 1.0f);
+    if (wallTexture != 0)
+    {
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, wallTexture);
+        setWorldShaderUseTexture(1);
+        glColor3f(1.0f, 1.0f, 1.0f);
+    }
+    else
+    {
+        glDisable(GL_TEXTURE_2D);
+        setWorldShaderUseTexture(0);
+        glColor3f(0.62f, 0.62f, 0.66f);
+    }
 
     if (!isWall(cellX + 0.5f, cellY + 1.5f))
     {
@@ -523,7 +555,10 @@ void drawWall(float x, float y)
         glEnd();
     }
 
-    glDisable(GL_TEXTURE_2D);
+    if (wallTexture != 0)
+    {
+        glDisable(GL_TEXTURE_2D);
+    }
     setWorldShaderUseTexture(0);
 }
 

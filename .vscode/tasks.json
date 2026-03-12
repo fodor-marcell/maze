@@ -10,6 +10,7 @@
                 "${workspaceFolder}/src/maze.c",
                 "${workspaceFolder}/src/gate.c",
                 "${workspaceFolder}/src/render.c",
+                "${workspaceFolder}/src/glshader.c",
                 "${workspaceFolder}/src/maze_generator.c",
                 "${workspaceFolder}/third_party/soil/SOIL/SOIL.c",
                 "${workspaceFolder}/third_party/soil/SOIL/image_DXT.c",
