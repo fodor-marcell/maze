@@ -11,10 +11,18 @@ typedef struct ObjMesh {
     float *uvs;
     float *normals;
     int count;
+    float minX;
+    float minY;
+    float minZ;
+    float maxX;
+    float maxY;
+    float maxZ;
 } ObjMesh;
 
 static EntranceGate starterGate = {0};
 static ObjMesh gateMesh = {0};
+static ObjMesh skeletonMesh = {0};
+static ObjMesh zombieMesh = {0};
 
 static int findRoomOpening(int centerX, int centerY, int roomHalfSize,
     int *roomX, int *roomY, int *outsideX, int *outsideY)
@@ -230,7 +238,7 @@ void tryOpenStarterGate(void)
 
 void updateStarterGate(float deltaTime)
 {
-    const float openSpeedDeg = 165.0f;
+    const float openSpeedDeg = 42.5f;
 
     if (!starterGate.active)
     {
@@ -429,6 +437,31 @@ static ObjMesh loadObjMesh(const char *path)
     mesh.uvs = outUV;
     mesh.normals = outN;
     mesh.count = outi;
+    if (outi > 0)
+    {
+        int k;
+
+        mesh.minX = outV[0];
+        mesh.minY = outV[1];
+        mesh.minZ = outV[2];
+        mesh.maxX = outV[0];
+        mesh.maxY = outV[1];
+        mesh.maxZ = outV[2];
+
+        for (k = 1; k < outi; k++)
+        {
+            float x = outV[k * 3];
+            float y = outV[k * 3 + 1];
+            float z = outV[k * 3 + 2];
+
+            if (x < mesh.minX) mesh.minX = x;
+            if (y < mesh.minY) mesh.minY = y;
+            if (z < mesh.minZ) mesh.minZ = z;
+            if (x > mesh.maxX) mesh.maxX = x;
+            if (y > mesh.maxY) mesh.maxY = y;
+            if (z > mesh.maxZ) mesh.maxZ = z;
+        }
+    }
     printf("loadObjMesh: %d triangles loaded from %s\n", outi / 3, path);
     return mesh;
 }
@@ -436,6 +469,16 @@ static ObjMesh loadObjMesh(const char *path)
 void loadGateMesh(const char *path)
 {
     gateMesh = loadObjMesh(path);
+}
+
+void loadSkeletonMesh(const char *path)
+{
+    skeletonMesh = loadObjMesh(path);
+}
+
+int hasSkeletonMesh(void)
+{
+    return skeletonMesh.count > 0;
 }
 
 static void drawObjMesh(const ObjMesh *mesh)
@@ -505,5 +548,94 @@ void drawStarterGate(void)
         glDisable(GL_TEXTURE_2D);
     }
     setWorldShaderUseTexture(0);
+    glPopMatrix();
+}
+
+void drawSkeletonMeshAt(float worldX, float worldZ, float faceX, float faceZ, float targetHeight)
+{
+    float height;
+    float centerX;
+    float centerZ;
+    float yaw;
+    float scale;
+    GLfloat matGray[] = {0.36f, 0.36f, 0.36f, 1.0f};
+
+    if (skeletonMesh.count <= 0)
+    {
+        return;
+    }
+
+    height = skeletonMesh.maxY - skeletonMesh.minY;
+    if (height <= 0.0001f)
+    {
+        return;
+    }
+
+    centerX = (skeletonMesh.minX + skeletonMesh.maxX) * 0.5f;
+    centerZ = (skeletonMesh.minZ + skeletonMesh.maxZ) * 0.5f;
+    yaw = atan2f(faceZ, faceX) * (180.0f / (float)M_PI);
+    scale = targetHeight / height;
+
+    glPushMatrix();
+    glTranslatef(worldX, 0.0f, worldZ);
+    glRotatef(-yaw + 90.0f, 0.0f, 1.0f, 0.0f);
+    glScalef(scale, scale, scale);
+    glTranslatef(-centerX, -skeletonMesh.minY, -centerZ);
+
+    glDisable(GL_TEXTURE_2D);
+    setWorldShaderUseTexture(0);
+    glColor3f(0.36f, 0.36f, 0.36f);
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, matGray);
+    drawObjMesh(&skeletonMesh);
+
+    setWorldShaderUseTexture(0);
+    glPopMatrix();
+}
+
+void loadZombieMesh(const char *path)
+{
+    zombieMesh = loadObjMesh(path);
+}
+
+int hasZombieMesh(void)
+{
+    return zombieMesh.count > 0;
+}
+
+void drawZombieAt(float worldX, float worldZ, float faceX, float faceZ, float targetHeight)
+{
+    float height;
+    float centerX;
+    float centerZ;
+    float yaw;
+    float scale;
+    GLfloat matWhite[] = {1.0f, 1.0f, 1.0f, 1.0f};
+
+    if (zombieMesh.count <= 0)
+    {
+        return;
+    }
+
+    height = zombieMesh.maxY - zombieMesh.minY;
+    if (height <= 0.0001f)
+    {
+        return;
+    }
+
+    centerX = (zombieMesh.minX + zombieMesh.maxX) * 0.5f;
+    centerZ = (zombieMesh.minZ + zombieMesh.maxZ) * 0.5f;
+    yaw = atan2f(faceZ, faceX) * (180.0f / (float)M_PI);
+    scale = targetHeight / height;
+
+    glPushMatrix();
+    glTranslatef(worldX, 0.0f, worldZ);
+    glRotatef(-yaw + 90.0f, 0.0f, 1.0f, 0.0f);
+    glScalef(scale, scale, scale);
+    glTranslatef(-centerX, -zombieMesh.minY, -centerZ);
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, matWhite);
+    drawObjMesh(&zombieMesh);
+
     glPopMatrix();
 }

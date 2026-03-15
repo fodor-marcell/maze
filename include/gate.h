@@ -28,5 +28,11 @@ void tryOpenStarterGate(void);
 void updateStarterGate(float deltaTime);
 void loadGateMesh(const char *path);
 void drawStarterGate(void);
+void loadSkeletonMesh(const char *path);
+int hasSkeletonMesh(void);
+void drawSkeletonMeshAt(float worldX, float worldZ, float faceX, float faceZ, float targetHeight);
+void loadZombieMesh(const char *path);
+void drawZombieAt(float worldX, float worldZ, float faceX, float faceZ, float targetHeight);
+int hasZombieMesh(void);
 
 #endif

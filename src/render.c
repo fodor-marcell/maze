@@ -98,25 +98,30 @@ void drawFlashlightMask(void)
 {
     int i;
     const int segments = 64;
-    const float minBeamScale = 0.68f;
-    const float maxBeamScale = 1.05f;
+    const float minBeamScale = 1.0f;
+    const float maxBeamScale = 1.55f;
     const float minBeamRadiusFactor = 0.22f;
-    const float minOverlayIntensity = 0.62f;
+    const float minOverlayIntensity = 0.78f;
     const float innerGlowAlpha = 0.18f;
     const float coreGlowAlpha = 0.82f;
     const float edgeGlowAlpha = 0.36f;
+
     float centerX = windowWidth * 0.5f;
     float centerY = windowHeight * 0.53f;
+
     float dirY = sinf(playerPitch);
     float cameraHeight = PLAYER_HEIGHT + cameraBobOffset;
+
     float downFactor;
     float safeDenom;
     float hitDistance;
     float dynamicScale;
     float distanceT;
+
     float minDim = (windowWidth < windowHeight ? (float)windowWidth : (float)windowHeight);
     float radius;
     float outerRadius;
+
     static float flickerTime = 0.0f;
     float intensity;
     float flicker = 1.0f;
@@ -125,19 +130,22 @@ void drawFlashlightMask(void)
     safeDenom = 0.10f + downFactor * 0.90f;
     hitDistance = cameraHeight / safeDenom;
     distanceT = clampf((hitDistance - 0.55f) / (5.5f - 0.55f), 0.0f, 1.0f);
+
     dynamicScale = minBeamScale + distanceT * (maxBeamScale - minBeamScale);
+
     {
         static float smoothedScale = 0.0f;
 
         if (smoothedScale <= 0.0f)
-        {
             smoothedScale = dynamicScale;
-        }
+
         smoothedScale += (dynamicScale - smoothedScale) * 0.08f;
         dynamicScale = smoothedScale;
     }
-    radius = minDim * 0.29f * dynamicScale;
+
+    radius = minDim * 0.835f * dynamicScale;
     radius = fmaxf(radius, minDim * minBeamRadiusFactor);
+
     outerRadius = sqrtf((float)(windowWidth * windowWidth + windowHeight * windowHeight)) * 0.72f;
     intensity = fmaxf(0.55f, minOverlayIntensity);
 
@@ -149,6 +157,7 @@ void drawFlashlightMask(void)
         glPushMatrix();
         glLoadIdentity();
         gluOrtho2D(0.0, (double)windowWidth, 0.0, (double)windowHeight);
+
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
         glLoadIdentity();
@@ -158,27 +167,30 @@ void drawFlashlightMask(void)
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+        glColor4f(0,0,0,1);
+
         glBegin(GL_QUADS);
-        glVertex2f(0, 0);
-        glVertex2f((float)windowWidth, 0);
-        glVertex2f((float)windowWidth, (float)windowHeight);
-        glVertex2f(0, (float)windowHeight);
+        glVertex2f(0,0);
+        glVertex2f(windowWidth,0);
+        glVertex2f(windowWidth,windowHeight);
+        glVertex2f(0,windowHeight);
         glEnd();
 
         glDisable(GL_BLEND);
         glEnable(GL_DEPTH_TEST);
+
         glPopMatrix();
         glMatrixMode(GL_PROJECTION);
         glPopMatrix();
         glMatrixMode(GL_MODELVIEW);
+
         return;
     }
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
-    gluOrtho2D(0.0, (double)windowWidth, 0.0, (double)windowHeight);
+    gluOrtho2D(0,windowWidth,0,windowHeight);
 
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
@@ -189,52 +201,118 @@ void drawFlashlightMask(void)
     glEnable(GL_BLEND);
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     glBegin(GL_TRIANGLE_STRIP);
     for (i = 0; i <= segments; i++)
     {
-        float angle = (float)i / (float)segments * 2.0f * (float)M_PI;
+        float angle = (float)i / segments * 2.0f * M_PI;
         float cosA = cosf(angle);
         float sinA = sinf(angle);
 
-        glColor4f(0.0f, 0.0f, 0.0f, 0.0f);
+        glColor4f(0,0,0,0);
         glVertex2f(centerX + cosA * radius, centerY + sinA * radius);
 
-        glColor4f(0.0f, 0.0f, 0.0f, 0.96f);
+        glColor4f(0,0,0,1);
         glVertex2f(centerX + cosA * outerRadius, centerY + sinA * outerRadius);
     }
     glEnd();
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
     glBegin(GL_TRIANGLE_STRIP);
     for (i = 0; i <= segments; i++)
     {
-        float angle = (float)i / (float)segments * 2.0f * (float)M_PI;
+        float angle = (float)i / segments * 2.0f * M_PI;
         float cosA = cosf(angle);
         float sinA = sinf(angle);
 
-        glColor4f(0.65f, 0.82f, 1.0f, intensity * innerGlowAlpha * flicker);
+        glColor4f(0.65f,0.82f,1.0f,intensity * innerGlowAlpha * flicker);
         glVertex2f(centerX + cosA * (radius * 0.75f), centerY + sinA * (radius * 0.75f));
 
-        glColor4f(0.40f, 0.68f, 1.0f, 0.0f);
+        glColor4f(0.40f,0.68f,1.0f,0);
         glVertex2f(centerX + cosA * (radius * 1.45f), centerY + sinA * (radius * 1.45f));
     }
     glEnd();
 
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
     glBegin(GL_TRIANGLE_FAN);
-    glColor4f(0.92f, 0.97f, 1.0f, intensity * coreGlowAlpha * flicker);
-    glVertex2f(centerX, centerY);
+
+    glColor4f(0.92f,0.97f,1.0f,intensity * coreGlowAlpha * flicker);
+    glVertex2f(centerX,centerY);
 
     for (i = 0; i <= segments; i++)
     {
-        float angle = (float)i / (float)segments * 2.0f * (float)M_PI;
+        float angle = (float)i / segments * 2.0f * M_PI;
         float x = centerX + cosf(angle) * radius;
         float y = centerY + sinf(angle) * radius;
-        float edgeFactor = edgeGlowAlpha;
 
-        glColor4f(0.92f, 0.97f, 1.0f, intensity * edgeFactor * flicker);
+        glColor4f(0.92f,0.97f,1.0f,intensity * edgeGlowAlpha * flicker);
+        glVertex2f(x,y);
+    }
+
+    glEnd();
+
+
+    float flashlightBaseX = windowWidth * 0.5f; 
+    float flashlightBaseY = 0.0f;
+    
+    float coneTopY = centerY - radius * 0.3f;
+    float coneLeftX = centerX - radius * 0.9f;
+    float coneRightX = centerX + radius * 0.9f;
+
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+    glBegin(GL_TRIANGLES);
+
+    glColor4f(0.9f, 0.95f, 1.0f, 0.75f);
+    glVertex2f(flashlightBaseX, flashlightBaseY);
+
+    glColor4f(0.9f, 0.95f, 1.0f, 0.15f);
+    glVertex2f(coneLeftX, coneTopY);
+
+    glColor4f(0.9f, 0.95f, 1.0f, 0.25f);
+    glVertex2f(flashlightBaseX, flashlightBaseY);
+
+    glColor4f(0.9f, 0.95f, 1.0f, 0.75f);
+    glVertex2f(flashlightBaseX, flashlightBaseY);
+
+    glColor4f(0.9f, 0.95f, 1.0f, 0.25f);
+    glVertex2f(flashlightBaseX, flashlightBaseY);
+
+    glColor4f(0.9f, 0.95f, 1.0f, 0.15f);
+    glVertex2f(coneRightX, coneTopY);
+
+    glEnd();
+
+    glBegin(GL_QUADS);
+    
+    glColor4f(0.95f, 0.98f, 1.0f, 0.85f);
+    glVertex2f(flashlightBaseX - 10.0f, flashlightBaseY);
+    glVertex2f(flashlightBaseX + 10.0f, flashlightBaseY);
+    
+    glColor4f(0.9f, 0.95f, 1.0f, 0.1f);
+    glVertex2f(coneRightX, coneTopY);
+    glVertex2f(coneLeftX, coneTopY);
+    
+    glEnd();
+
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    glBegin(GL_TRIANGLE_FAN);
+    
+    glColor4f(1.0f, 1.0f, 0.95f, 0.9f);
+    glVertex2f(flashlightBaseX, flashlightBaseY);
+    
+    for (i = 0; i <= 12; i++)
+    {
+        float angle = (float)i / 12 * M_PI;
+        float cosA = cosf(angle - M_PI/2);
+        float sinA = sinf(angle - M_PI/2);
+        float x = flashlightBaseX + cosA * 30.0f;
+        float y = flashlightBaseY + sinA * 30.0f;
+        
+        glColor4f(1.0f, 1.0f, 0.9f, 0.3f);
         glVertex2f(x, y);
     }
+    
     glEnd();
 
     glDisable(GL_BLEND);
@@ -245,6 +323,7 @@ void drawFlashlightMask(void)
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
 }
+
 
 void drawFloorAndCeiling(void)
 {

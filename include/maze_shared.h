@@ -25,8 +25,9 @@
 #define HEIGHT 14
 #define TILE 1.0
 #define START_ROOM_HALF_SIZE 2
-#define WALL_HEIGHT 2.2f
+#define WALL_HEIGHT 2.53f
 #define PLAYER_HEIGHT 0.55f
+#define PLAYER_COLLISION_RADIUS 0.244f
 #define MOVE_SPEED 0.01225f
 #define MOUSE_SENSITIVITY 0.002625f
 #define MAX_PITCH 1.2f
@@ -57,6 +58,7 @@ extern GLuint wallTexture;
 extern GLuint floorTexture;
 extern GLuint skyTexture;
 extern GLuint gateTexture;
+extern GLuint skeletonTexture;
 
 extern int endTileX;
 extern int endTileY;
