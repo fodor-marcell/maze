@@ -212,9 +212,9 @@ int loadOBJ(const char* path, Model* model)
         else if (strncmp(line, "f ", 2) == 0)
         {
             if (sscanf(line, "f %d/%d/%d %d/%d/%d %d/%d/%d",
-                       &model->faces[fIdx].v[0], &model->faces[fIdx].vt[0], &model->faces[fIdx].vn[0],
-                       &model->faces[fIdx].v[1], &model->faces[fIdx].vt[1], &model->faces[fIdx].vn[1],
-                       &model->faces[fIdx].v[2], &model->faces[fIdx].vt[2], &model->faces[fIdx].vn[2]) == 9)
+                &model->faces[fIdx].v[0], &model->faces[fIdx].vt[0], &model->faces[fIdx].vn[0],
+                &model->faces[fIdx].v[1], &model->faces[fIdx].vt[1], &model->faces[fIdx].vn[1],
+                &model->faces[fIdx].v[2], &model->faces[fIdx].vt[2], &model->faces[fIdx].vn[2]) == 9)
             {
                 fIdx++;
             }
@@ -364,12 +364,12 @@ static GLuint loadTexture(const char* path, int isFloorTexture)
     glBindTexture(GL_TEXTURE_2D, textureId);
 
     if (gluBuild2DMipmaps(GL_TEXTURE_2D,
-                          format,
-                          surface->w,
-                          surface->h,
-                          format,
-                          GL_UNSIGNED_BYTE,
-                          surface->pixels) != 0)
+        format,
+        surface->w,
+        surface->h,
+        format,
+        GL_UNSIGNED_BYTE,
+        surface->pixels) != 0)
     {
         SDL_FreeSurface(surface);
         return 0;
@@ -429,10 +429,10 @@ static void drawHelpOverlay(void)
 
     glColor4f(0.0f, 0.0f, 0.0f, 0.72f);
     glBegin(GL_QUADS);
-        glVertex2f(90.0f, 90.0f);
-        glVertex2f((float)windowWidth - 90.0f, 90.0f);
-        glVertex2f((float)windowWidth - 90.0f, (float)windowHeight - 90.0f);
-        glVertex2f(90.0f, (float)windowHeight - 90.0f);
+    glVertex2f(90.0f, 90.0f);
+    glVertex2f((float)windowWidth - 90.0f, 90.0f);
+    glVertex2f((float)windowWidth - 90.0f, (float)windowHeight - 90.0f);
+    glVertex2f(90.0f, (float)windowHeight - 90.0f);
     glEnd();
 
     glDisable(GL_BLEND);
@@ -460,8 +460,8 @@ void drawFloorAndCeiling(void) {
                 float c = ((x+y)&1) ? 0.25f : 0.18f;
                 glColor3f(c,c,c);
                 glBegin(GL_QUADS);
-                    glVertex3f(x,0,y); glVertex3f(x,0,y+1);
-                    glVertex3f(x+1,0,y+1); glVertex3f(x+1,0,y);
+                glVertex3f(x,0,y); glVertex3f(x,0,y+1);
+                glVertex3f(x+1,0,y+1); glVertex3f(x+1,0,y);
                 glEnd();
             }
         return;
@@ -475,10 +475,10 @@ void drawFloorAndCeiling(void) {
         for (int x = 0; x < WIDTH; x++) {
             float s = x * 1.5f, t = y * 1.5f;
             glBegin(GL_QUADS);
-                glTexCoord2f(s,t); glVertex3f(x,0,y);
-                glTexCoord2f(s,t+1.5f); glVertex3f(x,0,y+1);
-                glTexCoord2f(s+1.5f,t+1.5f); glVertex3f(x+1,0,y+1);
-                glTexCoord2f(s+1.5f,t); glVertex3f(x+1,0,y);
+            glTexCoord2f(s,t); glVertex3f(x,0,y);
+            glTexCoord2f(s,t+1.5f); glVertex3f(x,0,y+1);
+            glTexCoord2f(s+1.5f,t+1.5f); glVertex3f(x+1,0,y+1);
+            glTexCoord2f(s+1.5f,t); glVertex3f(x+1,0,y);
             glEnd();
         }
     glDisable(GL_TEXTURE_2D);
@@ -502,10 +502,10 @@ void drawSkybox(float cameraX, float cameraY, float cameraZ)
     glColor3f(0.28f, 0.28f, 0.32f);
 
     glBegin(GL_QUADS);
-        glTexCoord2f(0.0f, 0.0f); glVertex3f(cameraX - half, skyY, cameraZ - half);
-        glTexCoord2f(1.0f, 0.0f); glVertex3f(cameraX + half, skyY, cameraZ - half);
-        glTexCoord2f(1.0f, 1.0f); glVertex3f(cameraX + half, skyY, cameraZ + half);
-        glTexCoord2f(0.0f, 1.0f); glVertex3f(cameraX - half, skyY, cameraZ + half);
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(cameraX - half, skyY, cameraZ - half);
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(cameraX + half, skyY, cameraZ - half);
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(cameraX + half, skyY, cameraZ + half);
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(cameraX - half, skyY, cameraZ + half);
     glEnd();
 
     glDisable(GL_TEXTURE_2D);
@@ -533,10 +533,10 @@ void drawWall(float x, float y)
     {
         glNormal3f(0.0f, 0.0f, 1.0f);
         glBegin(GL_QUADS);
-            glTexCoord2f(0.0f, 0.0f); glVertex3f(x0, 0.0f, z1);
-            glTexCoord2f(1.0f, 0.0f); glVertex3f(x1, 0.0f, z1);
-            glTexCoord2f(1.0f, 1.0f); glVertex3f(x1, WALL_HEIGHT, z1);
-            glTexCoord2f(0.0f, 1.0f); glVertex3f(x0, WALL_HEIGHT, z1);
+        glTexCoord2f(0.0f, 0.0f); glVertex3f(x0, 0.0f, z1);
+        glTexCoord2f(1.0f, 0.0f); glVertex3f(x1, 0.0f, z1);
+        glTexCoord2f(1.0f, 1.0f); glVertex3f(x1, WALL_HEIGHT, z1);
+        glTexCoord2f(0.0f, 1.0f); glVertex3f(x0, WALL_HEIGHT, z1);
         glEnd();
     }
 
@@ -545,10 +545,10 @@ void drawWall(float x, float y)
     {
         glNormal3f(0.0f, 0.0f, -1.0f);
         glBegin(GL_QUADS);
-            glTexCoord2f(0.0f, 0.0f); glVertex3f(x1, 0.0f, z0);
-            glTexCoord2f(1.0f, 0.0f); glVertex3f(x0, 0.0f, z0);
-            glTexCoord2f(1.0f, 1.0f); glVertex3f(x0, WALL_HEIGHT, z0);
-            glTexCoord2f(0.0f, 1.0f); glVertex3f(x1, WALL_HEIGHT, z0);
+        glTexCoord2f(0.0f, 0.0f); glVertex3f(x1, 0.0f, z0);
+        glTexCoord2f(1.0f, 0.0f); glVertex3f(x0, 0.0f, z0);
+        glTexCoord2f(1.0f, 1.0f); glVertex3f(x0, WALL_HEIGHT, z0);
+        glTexCoord2f(0.0f, 1.0f); glVertex3f(x1, WALL_HEIGHT, z0);
         glEnd();
     }
 
@@ -557,10 +557,10 @@ void drawWall(float x, float y)
     {
         glNormal3f(-1.0f, 0.0f, 0.0f);
         glBegin(GL_QUADS);
-            glTexCoord2f(0.0f, 0.0f); glVertex3f(x0, 0.0f, z0);
-            glTexCoord2f(1.0f, 0.0f); glVertex3f(x0, 0.0f, z1);
-            glTexCoord2f(1.0f, 1.0f); glVertex3f(x0, WALL_HEIGHT, z1);
-            glTexCoord2f(0.0f, 1.0f); glVertex3f(x0, WALL_HEIGHT, z0);
+        glTexCoord2f(0.0f, 0.0f); glVertex3f(x0, 0.0f, z0);
+        glTexCoord2f(1.0f, 0.0f); glVertex3f(x0, 0.0f, z1);
+        glTexCoord2f(1.0f, 1.0f); glVertex3f(x0, WALL_HEIGHT, z1);
+        glTexCoord2f(0.0f, 1.0f); glVertex3f(x0, WALL_HEIGHT, z0);
         glEnd();
     }
 
@@ -569,10 +569,10 @@ void drawWall(float x, float y)
     {
         glNormal3f(1.0f, 0.0f, 0.0f);
         glBegin(GL_QUADS);
-            glTexCoord2f(0.0f, 0.0f); glVertex3f(x1, 0.0f, z1);
-            glTexCoord2f(1.0f, 0.0f); glVertex3f(x1, 0.0f, z0);
-            glTexCoord2f(1.0f, 1.0f); glVertex3f(x1, WALL_HEIGHT, z0);
-            glTexCoord2f(0.0f, 1.0f); glVertex3f(x1, WALL_HEIGHT, z1);
+        glTexCoord2f(0.0f, 0.0f); glVertex3f(x1, 0.0f, z1);
+        glTexCoord2f(1.0f, 0.0f); glVertex3f(x1, 0.0f, z0);
+        glTexCoord2f(1.0f, 1.0f); glVertex3f(x1, WALL_HEIGHT, z0);
+        glTexCoord2f(0.0f, 1.0f); glVertex3f(x1, WALL_HEIGHT, z1);
         glEnd();
     }
 
@@ -846,16 +846,16 @@ void init(void)
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.15f, 0.15f, 0.18f, 1.0f); 
     glShadeModel(GL_SMOOTH);
-     glEnable(GL_CULL_FACE);
-     glCullFace(GL_BACK);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
 
-     glDisable(GL_LIGHTING);
-     glDisable(GL_LIGHT0);
-     glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
-     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globalAmbient);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_LIGHT0);
+    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globalAmbient);
 
-     glEnable(GL_COLOR_MATERIAL);
-     glColorMaterial(GL_FRONT, GL_DIFFUSE);
+    glEnable(GL_COLOR_MATERIAL);
+    glColorMaterial(GL_FRONT, GL_DIFFUSE);
 
     wallTexture = loadTexture(WALL_TEXTURE_PATH, 0);
     floorTexture = loadTexture(FLOOR_TEXTURE_PATH, 1);
