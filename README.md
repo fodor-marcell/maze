@@ -60,3 +60,6 @@ Windows alatt a build után közvetlenül elindítható a létrejött `maze.exe`
 - `src/main.c`: a játék fő logikája, renderelés, vezérlés és UI
 - `src/config.c`: pályaadatok, kezdő- és célpozíciók, textúraútvonalak
 - `assets/`: textúrák és 3D modellfájlok
+
+## Assets link
+https://unimiskolchu-my.sharepoint.com/:f:/g/personal/marcell_fodor_student_uni-miskolc_hu/IgDhMuWt3ft1Q4KxsSoch-R9AW93_D8SBWdJdyYyVoxz5Fs?e=NOxpZ5
